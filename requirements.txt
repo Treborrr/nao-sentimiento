@@ -7,11 +7,11 @@ qi
 
 # El clasificador de emoción: modelo preentrenado en español (BERT).
 # Arrastra torch y transformers. Descarga el modelo (~500 MB) la 1a vez.
-pysentimiento==0.7.3
+pysentimiento>=0.7.3
 
-# (scikit-learn era del clasificador anterior TF-IDF; ya no se usa para
-#  clasificar, pero queda por si se quiere reentrenar con el dataset.)
-scikit-learn==1.9.1
-joblib==1.6.0
-numpy==2.5.4
-scipy==1.18.1
+# Para los scripts de análisis del dataset (no para el robot). Sin versión fija
+# para que pip elija la compatible con el Python de cada compañero.
+scikit-learn
+joblib
+numpy
+scipy
