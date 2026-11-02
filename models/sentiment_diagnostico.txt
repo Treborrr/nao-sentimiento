@@ -1,0 +1,14 @@
+objetivo: sentiment   filas: 2590   clases: 6
+lexico cosechado: 40 palabras por clase
+
+Filas CON alguno de esos adjetivos: 1667 (64.4%)
+Filas SIN ninguno de ellos      : 923 (35.6%)
+
+Linea base (siempre 'peaceful'): 0.255
+
+logreg      global 0.739   CON lexico 0.831   SIN lexico 0.572
+linearsvc   global 0.759   CON lexico 0.858   SIN lexico 0.580
+
+Lectura: la columna 'SIN lexico' es la que hay que mirar para
+estimar que va a pasar cuando alguien le hable al robot sin usar
+justo uno de los adjetivos que el dataset fue a buscar.

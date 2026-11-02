@@ -1,0 +1,164 @@
+<meta charset="utf-8">
+<title>NAO · vista de los ojos</title>
+<style>
+  :root {
+    --bg: #0d0f14; --panel: #161a22; --borde: #262c38;
+    --texto: #e6e9ef; --suave: #8b93a3; --acento: #1E90FF;
+  }
+  @media (prefers-color-scheme: light) {
+    :root { --bg:#f4f6fa; --panel:#fff; --borde:#dfe4ec; --texto:#1a1f29; --suave:#5a6474; }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; background: var(--bg); color: var(--texto);
+    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    display: flex; flex-direction: column; align-items: center; gap: 1.5rem;
+    padding: 2rem 1rem;
+  }
+  h1 { font-size: 1.1rem; font-weight: 600; margin: 0; letter-spacing: .02em; }
+  .sub { color: var(--suave); font-size: .85rem; margin-top: -1rem; text-align: center; max-width: 34rem; }
+
+  .cara {
+    background: radial-gradient(ellipse at 50% 38%, #20262f 0%, #0a0c10 72%);
+    border: 1px solid var(--borde); border-radius: 50% / 42%;
+    width: min(92vw, 460px); aspect-ratio: 1.35 / 1;
+    display: flex; align-items: center; justify-content: center; gap: 12%;
+    position: relative; box-shadow: 0 10px 40px rgba(0,0,0,.45) inset, 0 6px 24px rgba(0,0,0,.3);
+  }
+  .oreja { position:absolute; top:46%; width:7%; aspect-ratio:1; border-radius:50%;
+    background:#11141a; border:1px solid var(--borde); }
+  .oreja.izq { left:-3.5%; } .oreja.der { right:-3.5%; }
+
+  /* Un ojo = 8 LEDs alrededor + centro, como el NAO real */
+  .ojo { width: 26%; aspect-ratio: 1; position: relative; }
+  .led {
+    position: absolute; top: 50%; left: 50%; width: 22%; aspect-ratio: 1;
+    border-radius: 50%; background: #1b1f27;
+    transform-origin: center;
+    transition: background .18s linear, box-shadow .18s linear;
+  }
+
+  .controles { display:flex; flex-wrap:wrap; gap:.5rem; justify-content:center; max-width: 42rem; }
+  button {
+    font: inherit; font-size:.9rem; color: var(--texto); background: var(--panel);
+    border:1px solid var(--borde); border-radius:10px; padding:.5rem .9rem; cursor:pointer;
+    transition: border-color .15s, transform .05s;
+  }
+  button:hover { border-color: var(--acento); }
+  button:active { transform: translateY(1px); }
+  button .pto { display:inline-block; width:.7rem; height:.7rem; border-radius:50%;
+    margin-right:.45rem; vertical-align:-1px; }
+  .estado { color: var(--suave); font-size:.85rem; min-height:1.2em; text-align:center; }
+  .fila { display:flex; gap:.5rem; flex-wrap:wrap; justify-content:center; }
+  .et { width:100%; text-align:center; color:var(--suave); font-size:.75rem;
+    text-transform:uppercase; letter-spacing:.08em; margin-top:.4rem; }
+</style>
+
+<h1>NAO · vista de los ojos</h1>
+<p class="sub">Previsualización offline de los colores que el robot muestra en cada estado.
+Reproduce lo que programa <code>src/nao/nao_leds.py</code>. Para la demo real hace falta
+conexión al NAO; esto sirve para ver el comportamiento sin el robot.</p>
+
+<div class="cara">
+  <div class="oreja izq"></div>
+  <div class="ojo" id="ojoIzq"></div>
+  <div class="ojo" id="ojoDer"></div>
+  <div class="oreja der"></div>
+</div>
+
+<div class="estado" id="estado">—</div>
+
+<div class="controles">
+  <div class="fila">
+    <button onclick="chroma()"><span class="pto" style="background:linear-gradient(90deg,red,lime,blue)"></span>Conectar (chroma)</button>
+    <button onclick="estadoFijo('escuchando', 0x1E90FF)"><span class="pto" style="background:#1E90FF"></span>Escuchando</button>
+    <button onclick="estadoFijo('hablando', 0x00D070)"><span class="pto" style="background:#00D070"></span>Hablando</button>
+    <button onclick="estadoFijo('en reposo', 0xFFFFFF)"><span class="pto" style="background:#fff;border:1px solid #888"></span>Reposo</button>
+  </div>
+  <div class="et">Sentimiento detectado</div>
+  <div class="fila" id="filaSentimientos"></div>
+</div>
+
+<script>
+const ojos = [document.getElementById('ojoIzq'), document.getElementById('ojoDer')];
+const LEDS = 8;
+// Construye los 8 LEDs de cada ojo en círculo.
+for (const ojo of ojos) {
+  for (let i = 0; i < LEDS; i++) {
+    const led = document.createElement('div');
+    led.className = 'led';
+    const ang = (i / LEDS) * 2 * Math.PI - Math.PI / 2;
+    const r = 120; // % del radio
+    led.style.transform =
+      `translate(-50%,-50%) translate(${Math.cos(ang)*r}%, ${Math.sin(ang)*r}%)`;
+    ojo.appendChild(led);
+  }
+}
+const todos = () => document.querySelectorAll('.led');
+
+function hex(n){ return '#' + n.toString(16).padStart(6,'0'); }
+function pintar(color){ // color entero 0xRRGGBB
+  const c = hex(color);
+  for (const l of todos()) { l.style.background = c; l.style.boxShadow = `0 0 10px ${c}`; }
+}
+function apagar(){ for (const l of todos()){ l.style.background='#1b1f27'; l.style.boxShadow='none'; } }
+
+let anim = null;
+function pararAnim(){ if (anim){ clearInterval(anim); anim = null; } }
+
+// Mismo recorrido de matiz que chroma_conectado() en nao_leds.py
+function hsv(h){ // h en 0..1 -> 0xRRGGBB
+  const i = Math.floor(h*6), f = h*6-i, q = 1-f;
+  let r,g,b;
+  switch(i%6){
+    case 0: r=1;g=f;b=0; break; case 1: r=q;g=1;b=0; break;
+    case 2: r=0;g=1;b=f; break; case 3: r=0;g=q;b=1; break;
+    case 4: r=f;g=0;b=1; break; case 5: r=1;g=0;b=q; break;
+  }
+  return (Math.round(r*255)<<16)|(Math.round(g*255)<<8)|Math.round(b*255);
+}
+
+const estadoEl = document.getElementById('estado');
+function chroma(){
+  pararAnim();
+  estadoEl.textContent = 'Conectado · barrido arcoiris (chroma)';
+  let t = 0;
+  anim = setInterval(() => {
+    // Los LEDs van desfasados: da el efecto de rueda girando.
+    const leds = todos();
+    leds.forEach((l, idx) => {
+      const h = ((t + (idx % LEDS) / LEDS) % 1 + 1) % 1;
+      const c = hex(hsv(h));
+      l.style.background = c; l.style.boxShadow = `0 0 10px ${c}`;
+    });
+    t += 0.02;
+  }, 40);
+}
+function estadoFijo(nombre, color){
+  pararAnim();
+  estadoEl.textContent = nombre.charAt(0).toUpperCase()+nombre.slice(1)
+    + ' · ' + hex(color);
+  pintar(color);
+}
+
+// Colores por sentimiento: iguales a GESTOS de src/nao/nao_say.py
+const SENTIMIENTOS = [
+  ['alegre',   'joyful',   0xFFD500],
+  ['enojado',  'mad',      0xFF0000],
+  ['en calma', 'peaceful', 0x00C86E],
+  ['con fuerza','powerful',0xFF7A00],
+  ['triste',   'sad',      0x1E3CFF],
+  ['con miedo','scared',   0xC800FF],
+];
+const fila = document.getElementById('filaSentimientos');
+for (const [es, en, color] of SENTIMIENTOS){
+  const b = document.createElement('button');
+  b.innerHTML = `<span class="pto" style="background:${hex(color)}"></span>${es}`;
+  b.onclick = () => estadoFijo(`sentimiento: ${es} (${en})`, color);
+  fila.appendChild(b);
+}
+
+// Al abrir: el chroma de conexión, como haría el robot al conectarse.
+chroma();
+setTimeout(() => estadoFijo('en reposo', 0xFFFFFF), 4000);
+</script>

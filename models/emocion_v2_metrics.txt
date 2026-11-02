@@ -1,0 +1,32 @@
+Modelo propio entrenado con dataset v2 (TF-IDF + Regresión Logística)
+============================================================
+filas: 1995   clases: 6
+línea base (siempre 'neutral'): 0.525
+accuracy CV (5 folds)     : 0.635
+
+Comparación de enfoques:
+  dataset ORIGINAL (Rueda) -> TF-IDF           : 0.739  (confuso: feliz=peaceful)
+  dataset V2 (re-etiquetado) -> TF-IDF (alumno): 0.635  (intuitivo)
+  pysentimiento (maestro, en el robot)         : ~0.90+ en tweets es
+
+              precision    recall  f1-score   support
+
+     alegria      0.566     0.486     0.523       327
+       enojo      0.540     0.530     0.535       328
+       miedo      0.667     0.111     0.190        36
+     neutral      0.693     0.775     0.732      1048
+    sorpresa      0.833     0.349     0.492        43
+    tristeza      0.518     0.479     0.498       213
+
+    accuracy                          0.635      1995
+   macro avg      0.636     0.455     0.495      1995
+weighted avg      0.631     0.635     0.625      1995
+
+Matriz de confusión (fila=real, col=predicho)
+              alegria     enojo     miedo   neutral  sorpresa  tristeza
+alegria           159        14         0       135         0        19
+enojo              12       174         0       124         1        17
+miedo               4         6         4        16         0         6
+neutral            88        96         2       812         1        49
+sorpresa            2         7         0        15        15         4
+tristeza           16        25         0        69         1       102

@@ -1,0 +1,19 @@
+# Entorno de Python (se recrea con ./setup.sh; pesa >1 GB y es por máquina)
+.venv/
+
+# Modelo de voz de whisper (465 MB; GitHub no acepta >100 MB; lo baja setup.sh)
+models/*.bin
+
+# Modelos entrenados (se regeneran con los scripts de análisis)
+models/*.joblib
+
+# Audio de cada corrida
+audio/*.wav
+audio/*.aiff
+
+# Python
+__pycache__/
+*.pyc
+
+# macOS
+.DS_Store

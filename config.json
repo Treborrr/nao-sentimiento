@@ -1,0 +1,42 @@
+{
+  "nao": {
+    "_robot": "Cuál de los robots de abajo se usa por defecto. Se pisa con --robot.",
+    "robot": "nyx",
+
+    "_robots": "<<< ACÁ VA LA IP DEL ROBOT >>> La dice el NAO al apretarle el botón del pecho. El nombre (nyx, etc.) es sólo nuestra etiqueta.",
+    "robots": {
+      "nyx": { "ip": "172.22.200.36", "port": 9559 }
+    },
+
+    "_idioma_robot": "Idioma de la voz del NAO. Si el robot tiene español instalado, poné \"Spanish\" y responde en español con su propia voz (sin --voz mac). Si no lo tiene, usá \"English\" y la voz en español la pone la Mac con --voz mac/ambos.",
+    "idioma_robot": "Spanish",
+
+    "_chroma_al_conectar": "true = al conectar, los ojos hacen un barrido arcoíris (chroma) para avisar que la conexión está bien.",
+    "chroma_al_conectar": true,
+
+    "_colores": "Colores de los ojos en texto \"0xRRGGBB\". escucha = mientras graba; habla = mientras responde. El color por sentimiento está en src/nao_qi.py (GESTOS).",
+    "colores": {
+      "escucha": "0x1E90FF",
+      "habla": "0x00D070"
+    }
+  },
+
+  "_voz_local": "Voz de macOS `say` para la respuesta en español (--voz mac/ambos). Vacío = la primera voz española que encuentre (Paulina, Mónica...).",
+  "voz_local": null,
+
+  "whisper": {
+    "binario": "whisper-cli",
+    "modelo": "models/ggml-small.bin",
+    "idioma": "es"
+  },
+
+  "grabacion": {
+    "segundos": 6,
+    "dispositivo_local": ":0"
+  },
+
+  "_clasificador": "El clasificador es pysentimiento (BERT en español), no usa archivos de models/. Emociones: alegria, enojo, tristeza, miedo, sorpresa, neutral.",
+
+  "_umbral_duda": "Confianza mínima para que el robot afirme la emoción. Por debajo dice 'no estoy seguro'. Con pysentimiento la confianza suele ser alta (0.8-0.99) cuando acierta; 0.40 es un buen piso.",
+  "umbral_duda": 0.40
+}

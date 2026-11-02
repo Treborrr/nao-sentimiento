@@ -1,0 +1,28 @@
+objetivo: sentiment
+algoritmo: logreg
+filas: 2590
+accuracy CV (5 folds): 0.7390
+umbral de duda: 0.50 (cobertura 70.8%, precision 80.8%)
+
+              precision    recall  f1-score   support
+
+      joyful      0.726     0.674     0.699       350
+         mad      0.784     0.740     0.761       530
+    peaceful      0.741     0.812     0.775       660
+    powerful      0.708     0.733     0.720       420
+         sad      0.691     0.678     0.684       360
+      scared      0.780     0.733     0.756       270
+
+    accuracy                          0.739      2590
+   macro avg      0.738     0.728     0.733      2590
+weighted avg      0.740     0.739     0.739      2590
+
+
+Matriz de confusion (filas = real, columnas = predicho)
+                  joyful         mad    peaceful    powerful         sad      scared
+joyful               236          21          45          43           4           1
+mad                   16         392          39          18          47          18
+peaceful              20          26         536          49          28           1
+powerful              35           9          52         308           4          12
+sad                    7          38          38           9         244          24
+scared                11          14          13           8          26         198

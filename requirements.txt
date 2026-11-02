@@ -1,0 +1,17 @@
+# 'qi' (control del NAO) vive en este índice de la comunidad, no en el PyPI
+# normal. Con esta línea, `pip install -r requirements.txt` ya lo encuentra.
+--extra-index-url https://funwithagents.github.io/libqi-python/simple/
+
+# Control del NAO desde la Mac por la red (LibQi). Wheels para macOS/Linux/Win.
+qi
+
+# El clasificador de emoción: modelo preentrenado en español (BERT).
+# Arrastra torch y transformers. Descarga el modelo (~500 MB) la 1a vez.
+pysentimiento==0.7.3
+
+# (scikit-learn era del clasificador anterior TF-IDF; ya no se usa para
+#  clasificar, pero queda por si se quiere reentrenar con el dataset.)
+scikit-learn==1.9.1
+joblib==1.6.0
+numpy==2.5.4
+scipy==1.18.1

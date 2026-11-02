@@ -1,0 +1,17 @@
+Dataset v2 — informe
+========================================
+filas originales : 2590
+filas v2 (limpias): 2175
+con confianza >=0.5: 1995 (92%)
+
+Distribución de emociones v2 (intuitivas):
+  neutral    1120 (51%)
+  enojo       361 (17%)
+  alegria     342 (16%)
+  tristeza    244 (11%)
+  sorpresa     61 (3%)
+  miedo        47 (2%)
+
+Ejemplo del cambio de taxonomía — tweets con 'feliz':
+  etiqueta vieja (Rueda): {'scared': 3, 'mad': 4, 'sad': 2, 'peaceful': 10, 'powerful': 8, 'joyful': 2}
+  etiqueta v2 (intuitiva): {'alegria': 23, 'tristeza': 4, 'neutral': 2}
